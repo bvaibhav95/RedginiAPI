@@ -1,24 +1,29 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const index = require('./routes/index');
+const user = require('./routes/user');
+const login = require('./routes/login');
+const brand = require('./routes/brand');
+const order = require('./routes/order');
+const cake = require('./routes/cake');
+const cakeCategory = require('./routes/category');
+const keys = require('./config/keys');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-var login = require('./routes/login');
-
-var app = express();
-var cors = require('cors');
-
-app.use(cors({origin: 'http://localhost:5000'}));
+const app = express();            
+mongoose.connect(keys.mongodbMobile.dbURI);
+const cors = require('cors');   
+                          
+app.use(cors({origin: 'http://192.168.225.92:5001'}));   
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public/images', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -26,16 +31,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'http://192.168.43.41:5000/');
+  res.setHeader('Access-Control-Allow-Origin', 'http://192.168.225.92:5001/');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Credentials', false);
   next();
 });
 
-app.use('/', index);
-app.use('/users', users);
-app.use('/auth', login);
+app.use('/api', index);  
+app.use('/api/user', user);
+app.use('/api/auth', login);
+app.use('/api/brand', brand);
+app.use('/api/order', order);
+app.use('/api/cake', cake);
+app.use('/api/category', cakeCategory);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -43,7 +52,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
 
 // error handler
 app.use(function(err, req, res, next) {
