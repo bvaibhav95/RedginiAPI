@@ -31,9 +31,9 @@ router.get('/resend-otp/:mobileNum', function(req, res, next) {
     });
 });  
 
-router.get('/login/:providerId/:provider/:name/:email', function(req, res, next) {
+router.get('/login/:providerId/:provider/:name/:email/:phone', function(req, res, next) {
     try {
-        User.findOne({providerID : req.params.providerId}).then(function(availableUser){
+        User.findOne({phone : req.params.phone}).then(function(availableUser){
             if(availableUser){
                 res.send(JSON.stringify({
                     'status' : 'User available'
@@ -44,7 +44,7 @@ router.get('/login/:providerId/:provider/:name/:email', function(req, res, next)
                     provider   : req.params.provider,
                     username   : req.params.name,
                     email      : req.params.email,
-                    // phone      : req.params.phone
+                    phone      : req.params.phone
                 }).save().then(function (newUser){
                     res.send(JSON.stringify({
                         'status' : 'User created'
